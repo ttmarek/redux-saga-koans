@@ -1,0 +1,19 @@
+{
+  "name": "redux-saga-koans",
+  "version": "0.0.0",
+  "description": "Learn redux-saga by making tests pass",
+  "main": "index.js",
+  "author": "Thomas Marek <thomas.t.marek@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "test": "jest --watch"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-preset-es2015": "^6.24.1",
+    "jest": "^20.0.4",
+    "redux": "^3.7.1",
+    "redux-mock-store": "^1.2.3",
+    "redux-saga": "^0.15.4"
+  }
+}
