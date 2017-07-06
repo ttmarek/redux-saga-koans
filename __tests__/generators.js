@@ -130,3 +130,49 @@ test.skip('I know what Generator.return() does', () => {
     done: '', // FIX
   });
 });
+
+test.skip('I know that I can yield funtions from a generator', () => {
+  function* foo() {
+    yield function sayHello() {
+      return 'hello';
+    };
+    yield function sayWorld() {
+      return; // FIX
+    };
+  }
+
+  const gen = foo();
+
+  const sayHello = gen.next().value;
+  const sayWorld = gen.next().value;
+
+  expect(sayHello() + ' ' + sayWorld()).toEqual('world'); // FIX
+});
+
+test.skip('I am comfortable with generators', () => {
+  const fruits = [];
+  // FIX
+  function foo() {
+  }
+  // ---
+
+  const gen = foo();
+
+  expect(fruits).toEqual([]);
+
+  const firstYieldedValue = gen.next().value;
+  expect(firstYieldedValue).toBe('apple');
+
+  expect(fruits).toEqual([]);
+
+  const secondYieldedValue = gen.next().value;
+  expect(secondYieldedValue()).toBe('kiwi');
+
+  expect(fruits).toEqual(['orange']);
+
+  const lastYield = gen.next();
+
+  expect(fruits).toEqual(['orange', 'pineapple']);
+
+  expect(lastYield).toEqual({ value: undefined, done: true });
+});
