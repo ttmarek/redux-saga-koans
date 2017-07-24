@@ -57,3 +57,23 @@ test.skip('I know that I can dispatch multiple actions from a saga', () => {
     { type: 'FRUIT', payload: 'orange' },
   ]);
 });
+
+test.skip('I know what `takeEvery` does', () => {
+
+  let count = 0;
+  function incrementCount() {
+    count++;
+  }
+
+  function* saga() {
+    yield takeEvery('SOME_ACTION_TYPE', incrementCount);
+  }
+
+  const { reduxStore } = getConfiguredStore({}, saga);
+  const actions = reduxStore.getActions();
+
+  reduxStore.dispatch({ type: 'SOME_ACTION_TYPE' });
+  reduxStore.dispatch({ type: 'SOME_ACTION_TYPE' });
+
+  expect(count).toBe(); // FIX
+});
