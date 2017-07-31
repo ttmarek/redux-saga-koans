@@ -130,17 +130,40 @@ test.skip('I know that you can `call` functions that return promises', (done) =>
   const { reduxStore } = getConfiguredStore({}, saga);
 });
 
-test.skip('I understand the call effect', () => {
+test.skip('I understand the call effect', (done) => {
+  let names;
 
-
-  // FIX
-  function saga() {
+  function saveNames(data) {
+    names = data.map((name) => `${name.first} ${name.last}`).join(', ');
   }
-  // ----
+
+  function fetchNames() {
+    return new Promise((resolve) => {
+      resolve([
+        { first: 'Bill', last: 'Gates' },
+        { first: 'Steve', last: 'Jobs' },
+        { first: 'Jeff', last: 'Bezos' },
+        { first: 'Elon', last: 'Musk' },
+      ]);
+    });
+  }
+
+  function* saga() {
+    // FIX
+
+    // ---
+
+    // keep this:
+    try {
+      expect(names).toEqual('Bill Gates, Steve Jobs, Jeff Bezos, Elon Musk');
+    } catch(err) {
+      throw Error(err);
+    } finally {
+      done();
+    }
+  }
 
   const { reduxStore } = getConfiguredStore({}, saga);
-
-  expect().toEqual();
 });
 
 test.skip('I know what `takeEvery` does', () => {
@@ -163,22 +186,103 @@ test.skip('I know what `takeEvery` does', () => {
 });
 
 test.skip('I know that you can pass a generator to `takeEvery`', () => {
-});
-
-test.skip('I know how to use `put`, `takeEvery` and `call` together', (done) => {
-  function *doAwesomeThings() {
+  let count = 0;
+  function incrementCount() {
+    count++;
   }
 
+  function* doSomethingAwesome() {
+    yield call(incrementCount);
+    yield call(incrementCount);
+    yield call(incrementCount);
+  }
+
+  function* saga() {
+    yield takeEvery('SOME_ACTION_TYPE', doSomethingAwesome);
+  }
+
+  const { reduxStore } = getConfiguredStore({}, saga);
+
+  reduxStore.dispatch({ type: 'SOME_ACTION_TYPE' });
+
+  expect(count).toBe(); // FIX
+});
+
+test.skip('I understand takeEvery', () => {
+  const basket = [];
+
+  function* addFruits() {
+    yield call(() => basket.push('apple'));
+    yield call(() => basket.push('orange'));
+    yield call(() => basket.push('kiwi'));
+  }
+
+  function addVeggies() {
+    basket.push('carrot');
+    basket.push('broccoli');
+    basket.push('potato');
+  }
+
+  // FIX
+  function saga() {
+  }
+  // ---
+
+  const { reduxStore } = getConfiguredStore({}, saga);
+
+  reduxStore.dispatch({ type: 'FRUITS_WANTED' });
+  reduxStore.dispatch({ type: 'VEGGIES_WANTED' });
+  reduxStore.dispatch({ type: 'FRUITS_WANTED' });
+
+  expect(basket).toEqual([
+    'apple', 'orange', 'kiwi',
+    'carrot', 'broccoli', 'potato',
+    'apple', 'orange', 'kiwi',
+  ]);
+});
+
+test('I know the basics of redux saga', () => {
+  // call fetchData
+  // call transform the data
+  // put the data somewhere
+
+  const getData = () => new Promise.resolve(
+    'Bill Gates, Steve Jobs, Jeff Bezos, Elon Musk'
+  );
+  const transformData = (data) => new Promise.resolve(
+    data.split(', ').reduce((result, name) => {
+      const nameSegments = name.split(' ');
+      return Object.assign({}, result, {
+        first: nameSegments[0],
+        last: nameSegments[1],
+      }, {});
+    })
+  );
+
+  function *handleTrigger() {
+    const names = yield call(getData);
+    const namesAsObj = yield call(transformData, names);
+    yield put({ type: 'NAMES_RETRIEVED', payload: namesAsObj });
+  }
+
+  // FIX
   function *watchTriggeringAction() {
-    yield takeEvery('TRIGGER', doAwesomeThings);
+    yield takeEvery('TRIGGER', handleTrigger);
+  }
+  // ---
+
+  function *rootSaga() {
+    yield call(watchTriggeringAction);
+    try {
+    }
   }
 
-  const { reduxStore } = getConfiguredStore({}, watchTriggeringAction);
+  const { reduxStore } = getConfiguredStore({}, rootSaga);
 
-  reduxStore.dispatch({ type: 'TRIGGER' });
-  reduxStore.dispatch({ type: 'TRIGGER' });
-  reduxStore.dispatch({ type: 'TRIGGER' });
-});
-
-test.skip('I know the basics of redux saga', () => {
+  console.log(reduxStore.dispatch.toString());
+  return reduxStore.dispatch({ type: 'TRIGGER' })
+    .then(() => {
+      const actions = reduxStore.getActions();
+      console.log(actions);
+    });
 });
