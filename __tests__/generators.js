@@ -149,6 +149,34 @@ test.skip('I know that I can yield funtions from a generator', () => {
   expect(sayHello() + ' ' + sayWorld()).toEqual('world'); // FIX
 });
 
+test.skip('I know that you can wrap yields in conditionals and loops', () => {
+  let addOrange;
+
+  function* foo() {
+    for(let i = 0; i <= 3; i++) { // FIX
+      yield 'apple';
+    }
+    if (addOrange) {
+      yield 'orange';
+    } else {
+      yield 'kiwi';
+    }
+  }
+
+  const gen = foo();
+  const fruitBasket = [];
+
+  addOrange = true; // FIX
+
+  while(true) {
+    const nextYield = gen.next();
+    if (nextYield.done) break;
+    fruitBasket.push(nextYield.value);
+  }
+
+  expect(fruitBasket).toEqual(['apple', 'apple', 'kiwi']);
+});
+
 test.skip('I am comfortable with generators', () => {
   const fruits = [];
   // FIX
