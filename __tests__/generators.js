@@ -177,6 +177,26 @@ test.skip('I know that you can wrap yields in conditionals and loops', () => {
   expect(fruitBasket).toEqual(['apple', 'apple', 'kiwi']);
 });
 
+test.skip('I know that I can wrap yields in an infinite while loop', () => {
+
+  function* sayHi() {
+    while(true) {
+      yield 'hi';
+    }
+  }
+
+  const gen = sayHi();
+
+  for (let i = 0; i < 99; i++) { // EXPERIMENT
+    gen.next();
+  }
+
+  const hundredth = gen.next();
+
+  expect(hundredth.value).toBe(); // FIX
+  expect(hundredth.done).toBe(); // FIX
+});
+
 test.skip('I am comfortable with generators', () => {
   const fruits = [];
   // FIX
