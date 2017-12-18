@@ -20,6 +20,7 @@ test('...', () => {
     yield fruits.push('banana');
     // yield call(sagaA, ['apple', 'kiwi', 'pineapple']);
     // yield* sagaA(['apple', 'kiwi', 'pineapple']);
+    // yield sagaA(['apple', 'kiwi', 'pineapple']);
     yield fruits.push('mango');
   }
 
