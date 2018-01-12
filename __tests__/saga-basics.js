@@ -245,8 +245,6 @@ test.skip('I know the basics of redux saga', () => {
   // call fetchData
   // call transform the data
   // put the data somewhere
-  expect.assertions(1);
-
   const getData = () => new Promise((resolve) => {
     resolve('Bill Gates, Steve Jobs, Jeff Bezos, Elon Musk');
   });
