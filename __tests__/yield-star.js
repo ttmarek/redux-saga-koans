@@ -6,25 +6,23 @@ import {
 import getConfiguredStore from '../utils/get-configured-store';
 
 
-test('...', () => {
-
-  const fruits = [];
-
+test('I know that yield* delegates the yielding to another function', () => {
   function* sagaA(arrayOfFruits) {
     for (let i = 0; i < arrayOfFruits.length; i++) {
-      yield fruits.push(arrayOfFruits[i]);
+      yield arrayOfFruits[i];
     }
   }
 
   function* sagaB() {
-    yield fruits.push('banana');
-    // yield call(sagaA, ['apple', 'kiwi', 'pineapple']);
-    // yield* sagaA(['apple', 'kiwi', 'pineapple']);
-    // yield sagaA(['apple', 'kiwi', 'pineapple']);
-    yield fruits.push('mango');
+    yield 'banana';
+    // FIX
+    yield 'mango';
   }
 
-  const { reduxStore } = getConfiguredStore({}, sagaB);
+  const fruits = [];
+  for (let fruit of sagaB()) {
+    fruits.push(fruit);
+  }
 
   expect(fruits).toEqual([
     'banana',

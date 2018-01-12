@@ -241,48 +241,52 @@ test.skip('I understand takeEvery', () => {
   ]);
 });
 
-test('I know the basics of redux saga', () => {
+test.skip('I know the basics of redux saga', () => {
   // call fetchData
   // call transform the data
   // put the data somewhere
+  const getData = () => new Promise((resolve) => {
+    resolve('Bill Gates, Steve Jobs, Jeff Bezos, Elon Musk');
+  });
 
-  const getData = () => new Promise.resolve(
-    'Bill Gates, Steve Jobs, Jeff Bezos, Elon Musk'
-  );
-  const transformData = (data) => new Promise.resolve(
-    data.split(', ').reduce((result, name) => {
-      const nameSegments = name.split(' ');
-      return Object.assign({}, result, {
-        first: nameSegments[0],
-        last: nameSegments[1],
-      }, {});
-    })
-  );
-
-  function *handleTrigger() {
-    const names = yield call(getData);
-    const namesAsObj = yield call(transformData, names);
-    yield put({ type: 'NAMES_RETRIEVED', payload: namesAsObj });
-  }
+  const transformData = (data) => new Promise((resolve) => {
+    resolve(
+      data.split(', ').map((person) => {
+        const nameSegments = person.split(' ');
+        return {first: nameSegments[0], last: nameSegments[1]};
+      })
+    )
+  });
 
   // FIX
-  function *watchTriggeringAction() {
-    yield takeEvery('TRIGGER', handleTrigger);
+  function *handleTrigger() {
   }
   // ---
 
   function *rootSaga() {
-    yield call(watchTriggeringAction);
-    try {
-    }
+    yield takeEvery('TRIGGER', handleTrigger);
   }
 
   const { reduxStore } = getConfiguredStore({}, rootSaga);
 
-  console.log(reduxStore.dispatch.toString());
-  return reduxStore.dispatch({ type: 'TRIGGER' })
-    .then(() => {
+  const execute = () => new Promise((resolve) => {
+    reduxStore.dispatch({type: 'TRIGGER'});
+    setTimeout(() => {
       const actions = reduxStore.getActions();
-      console.log(actions);
-    });
+      resolve(actions);
+    }, 0);
+  });
+
+  const expected = [
+    { type: 'TRIGGER' },
+    { type: 'NAMES_RETRIEVED', payload: [
+      { first: 'Bill', last: 'Gates' },
+      { first: 'Steve', last: 'Jobs' },
+      { first: 'Jeff', last: 'Bezos' },
+      { first: 'Elon', last: 'Musk' },
+    ] }
+  ];
+
+  return expect(execute()).resolves.toEqual(expected);
+
 });
