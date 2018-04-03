@@ -241,15 +241,15 @@ test.skip('I understand takeEvery', () => {
   ]);
 });
 
-test('I know the basics of redux saga', () => {
+test.skip('I know the basics of redux saga', () => {
   // call fetchData
   // call transform the data
   // put the data somewhere
 
-  const getData = () => new Promise.resolve(
+  const getData = () => Promise.resolve(
     'Bill Gates, Steve Jobs, Jeff Bezos, Elon Musk'
   );
-  const transformData = (data) => new Promise.resolve(
+  const transformData = (data) => Promise.resolve(
     data.split(', ').reduce((result, name) => {
       const nameSegments = name.split(' ');
       return Object.assign({}, result, {
@@ -259,22 +259,20 @@ test('I know the basics of redux saga', () => {
     })
   );
 
-  function *handleTrigger() {
+  function* handleTrigger() {
     const names = yield call(getData);
     const namesAsObj = yield call(transformData, names);
     yield put({ type: 'NAMES_RETRIEVED', payload: namesAsObj });
   }
 
   // FIX
-  function *watchTriggeringAction() {
+  function* watchTriggeringAction() {
     yield takeEvery('TRIGGER', handleTrigger);
   }
   // ---
 
-  function *rootSaga() {
+  function* rootSaga() {
     yield call(watchTriggeringAction);
-    try {
-    }
   }
 
   const { reduxStore } = getConfiguredStore({}, rootSaga);

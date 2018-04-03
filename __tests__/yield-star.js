@@ -6,7 +6,7 @@ import {
 import getConfiguredStore from '../utils/get-configured-store';
 
 
-test('...', () => {
+test.skip('...', () => {
 
   const fruits = [];
 
