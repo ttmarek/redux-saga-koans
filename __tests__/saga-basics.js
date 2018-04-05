@@ -250,26 +250,21 @@ test.skip('I know the basics of redux saga', () => {
     'Bill Gates, Steve Jobs, Jeff Bezos, Elon Musk'
   );
   const transformData = (data) => Promise.resolve(
-    data.split(', ').reduce((result, name) => {
-      const nameSegments = name.split(' ');
-      return Object.assign({}, result, {
-        first: nameSegments[0],
-        last: nameSegments[1],
-      }, {});
+    data.split(', ').map(person => {
+      const nameSegments = person.split(' ')
+      return { first: nameSegments[0], last: nameSegments[1] }
     })
   );
 
   function* handleTrigger() {
-    const names = yield call(getData);
+    const names = call(getData); // FIX
     const namesAsObj = yield call(transformData, names);
     yield put({ type: 'NAMES_RETRIEVED', payload: namesAsObj });
   }
 
-  // FIX
   function* watchTriggeringAction() {
-    yield takeEvery('TRIGGER', handleTrigger);
+    yield takeEvery('TRIGGER'); // FIX
   }
-  // ---
 
   function* rootSaga() {
     yield call(watchTriggeringAction);
@@ -277,10 +272,25 @@ test.skip('I know the basics of redux saga', () => {
 
   const { reduxStore } = getConfiguredStore({}, rootSaga);
 
-  console.log(reduxStore.dispatch.toString());
-  return reduxStore.dispatch({ type: 'TRIGGER' })
-    .then(() => {
-      const actions = reduxStore.getActions();
-      console.log(actions);
-    });
+  const expectedActions = [
+    { type: 'TRIGGER' },
+    {
+      type: 'NAMES_RETRIEVED',
+      payload: [
+        {first: 'Bill', last: 'Gates'},
+        {first: 'Steve', last: 'Jobs'},
+        {first: 'Jeff', last: 'Bezos'},
+        {first: 'Elon', last: 'Musk'}
+    ]}
+  ]
+
+  reduxStore.subscribe(() => {
+    const actions = reduxStore.getActions()
+
+    if (actions.length >= expectedActions.length) {
+      expect(actions).toEqual(expectedActions)
+    }
+  })
+
+  reduxStore.dispatch({ type: 'TRIGGER' })
 });
