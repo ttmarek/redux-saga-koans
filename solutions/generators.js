@@ -1,9 +1,9 @@
-test.skip('I know what a generator function is', () => {
+test('I know what a generator function is', () => {
   // This is a generator function.
   function* foo() {
     // A generator function is like a regular function except
     // you yield things rather than returning them.
-    yield 'hello'; // FIX
+    yield 'goodbye'; // FIX
   }
   // When called, generator functions return Generator objects.
   const gen = foo();
@@ -22,10 +22,9 @@ test.skip('I know what a generator function is', () => {
   });
 });
 
-test.skip('I know what generators yield when there is nothing left to yield', () => {
+test('I know what generators yield when there is nothing left to yield', () => {
   function* foo() {
     yield 'hello';
-    yield 'hello again'; //FIX
   }
 
   const gen = foo();
@@ -43,9 +42,11 @@ test.skip('I know what generators yield when there is nothing left to yield', ()
   });
 });
 
-test.skip('I know how to create a generator function', () => {
+test('I know how to create a generator function', () => {
   // FIX
-  function foo() {
+  function* foo() {
+    yield 'hello'
+    yield 'world'
   }
   // ---
 
@@ -74,7 +75,7 @@ test.skip('I know how to create a generator function', () => {
   });
 });
 
-test.skip('I know what gets executed when I call the next() method', () => {
+test('I know what gets executed when I call the next() method', () => {
   // When the next() method is called, the generator function
   // body is executed up to the next yield.
 
@@ -84,6 +85,8 @@ test.skip('I know what gets executed when I call the next() method', () => {
   function* foo() {
     someArray.push('a');
     yield 'hello';
+    someArray.push('b')
+    yield
     someArray.push('c');
   }
   // ---
@@ -109,7 +112,7 @@ test.skip('I know what gets executed when I call the next() method', () => {
   expect(someArray).toEqual(['a', 'b', 'c']);
 });
 
-test.skip('I know what Generator.return() does', () => {
+test('I know what Generator.return() does', () => {
   function* foo() {
     yield 'hello';
     yield 'world';
@@ -125,6 +128,7 @@ test.skip('I know what Generator.return() does', () => {
   // FIX
   // hint: executing the return method finishes the generator. Any yields left in the
   // generator will be ignored. It will be as if they never existed :(
+  gen.return()
   // ---
 
   expect(gen.next()).toEqual({
@@ -133,27 +137,29 @@ test.skip('I know what Generator.return() does', () => {
   });
 });
 
-test.skip('I know that I can yield functions from a generator', () => {
+test('I know that I can yield functions from a generator', () => {
   function* foo() {
     yield function sayHello() {
-      return 'hi'; // FIX
+      return 'hello'; // FIX
     };
-    yield 'world' // FIX
+    yield function sayWorld() {
+      return 'world'
+    }// FIX
   }
 
   const gen = foo();
 
-  const sayHello = gen.next();
-  const sayWorld = gen.next();
+  const sayHello = gen.next().value; // FIX
+  const sayWorld = gen.next().value; // FIX
 
   expect(sayHello() + ' ' + sayWorld()).toEqual('hello world');
 });
 
-test.skip('I know that you can wrap yields in conditionals and loops', () => {
+test('I know that you can wrap yields in conditionals and loops', () => {
   let addOrange;
 
   function* foo() {
-    for(let i = 0; i <= 3; i++) { // FIX
+    for(let i = 0; i <= 1; i++) { // FIX
       yield 'apple';
     }
     if (addOrange) {
@@ -166,7 +172,7 @@ test.skip('I know that you can wrap yields in conditionals and loops', () => {
   const gen = foo();
   const fruitBasket = [];
 
-  addOrange = true; // FIX
+  addOrange = false; // FIX
 
   while(true) {
     const nextYield = gen.next();
@@ -177,10 +183,10 @@ test.skip('I know that you can wrap yields in conditionals and loops', () => {
   expect(fruitBasket).toEqual(['apple', 'apple', 'kiwi']);
 });
 
-test.skip('I know that I can wrap yields in an infinite while loop', () => {
+test('I know that I can wrap yields in an infinite while loop', () => {
 
   function* sayHi() {
-    while(false) { // FIX
+    while(true) { // FIX
       yield 'hi';
     }
   }
@@ -197,10 +203,14 @@ test.skip('I know that I can wrap yields in an infinite while loop', () => {
   expect(hundredth.done).toBe(false);
 });
 
-test.skip('I am comfortable with generators', () => {
+test('I am comfortable with generators', () => {
   const fruits = [];
   // FIX
-  function foo() {
+  function* foo() {
+    yield 'apple'
+    fruits.push('orange')
+    yield () => 'kiwi'
+    fruits.push('pineapple')
   }
   // ---
 
