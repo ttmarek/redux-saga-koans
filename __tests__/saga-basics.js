@@ -241,7 +241,7 @@ test.skip('I understand takeEvery', () => {
   ]);
 });
 
-test.skip('I know the basics of redux saga', () => {
+test('I know the basics of redux saga', () => {
   // call fetchData
   // call transform the data
   // put the data somewhere
@@ -262,7 +262,7 @@ test.skip('I know the basics of redux saga', () => {
   function* handleTrigger() {
     const names = yield call(getData);
     const namesAsObj = yield call(transformData, names);
-    yield put({ type: 'NAMES_RETRIEVED', payload: namesAsObj });
+    yield put({ type: 'NAMES_RETRIEVED' });
   }
 
   // FIX
@@ -277,10 +277,18 @@ test.skip('I know the basics of redux saga', () => {
 
   const { reduxStore } = getConfiguredStore({}, rootSaga);
 
-  console.log(reduxStore.dispatch.toString());
-  return reduxStore.dispatch({ type: 'TRIGGER' })
-    .then(() => {
-      const actions = reduxStore.getActions();
-      console.log(actions);
-    });
+  const expectedActions = [
+    { type: "TRIGGER" },
+    { type: "NAMES_RETRIEVED" }
+  ]
+
+  reduxStore.subscribe(() => {
+    const actions = reduxStore.getActions()
+
+    if (actions.length >= expectedActions.length) {
+      expect(actions).toEqual(expectedActions)
+    }
+  })
+
+  reduxStore.dispatch({ type: 'TRIGGER' })
 });
