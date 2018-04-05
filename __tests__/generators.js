@@ -143,8 +143,8 @@ test.skip('I know that I can yield functions from a generator', () => {
 
   const gen = foo();
 
-  const sayHello = gen.next();
-  const sayWorld = gen.next();
+  const sayHello = gen.next(); // FIX
+  const sayWorld = gen.next(); // FIX
 
   expect(sayHello() + ' ' + sayWorld()).toEqual('hello world');
 });
